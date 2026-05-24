@@ -1,0 +1,59 @@
+{
+  "datasets": {
+    "stable_diffusion_v15": {
+      "path": "./datasets/stable_diffusion_v15",
+      "name": "Stable Diffusion v1.5",
+      "train_samples": 4000,
+      "test_samples": 1000
+    },
+    "midjourney": {
+      "path": "./datasets/midjourney",
+      "name": "Midjourney",
+      "train_samples": 3000,
+      "test_samples": 750
+    },
+    "glide": {
+      "path": "./datasets/glide",
+      "name": "GLIDE",
+      "train_samples": 2000,
+      "test_samples": 500
+    }
+  },
+  "experiments": [
+    {
+      "name": "SD15_to_Midjourney",
+      "train_dataset": "stable_diffusion_v15",
+      "test_dataset": "midjourney",
+      "description": "Train on SD v1.5, test on Midjourney"
+    },
+    {
+      "name": "SD15_to_GLIDE",
+      "train_dataset": "stable_diffusion_v15",
+      "test_dataset": "glide",
+      "description": "Train on SD v1.5, test on GLIDE"
+    },
+    {
+      "name": "Midjourney_to_SD15",
+      "train_dataset": "midjourney",
+      "test_dataset": "stable_diffusion_v15",
+      "description": "Train on Midjourney, test on SD v1.5"
+    },
+    {
+      "name": "Multi_source_training",
+      "train_dataset": [
+        "stable_diffusion_v15",
+        "midjourney"
+      ],
+      "test_dataset": "glide",
+      "description": "Multi-source training, test on GLIDE"
+    }
+  ],
+  "model_config": {
+    "backbone": "vit_large_patch14_clip_224",
+    "num_classes": 2,
+    "input_size": 224,
+    "batch_size": 16,
+    "epochs": 10,
+    "learning_rate": 0.0001
+  }
+}

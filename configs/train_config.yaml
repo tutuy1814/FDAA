@@ -1,0 +1,100 @@
+# AIGC Detection Training Configuration
+# 使用现有数据集进行训练
+
+# Model settings
+model:
+  name: "AIGCDetector"
+  backbone_name: "ViT-L/14"
+  num_classes: 2
+  img_size: 224
+  patch_size: 14
+  embed_dim: 768  # 修改为768维以匹配实际backbone输出
+  num_adapter_layers: 3
+  num_prototypes: 4
+  use_hierarchical: true
+  dropout: 0.1
+  freeze_backbone: true
+  lite: true  # 使用轻量版模型避免CLIP依赖
+
+# FDAA settings
+fdaa:
+  reduction: 4
+  num_heads: 8
+  use_srm: true
+  use_dct: true
+  use_wavelet: false
+
+# MGFP settings
+mgfp:
+  num_prototypes: 4
+  use_hierarchical: true
+
+# Training settings
+training:
+  batch_size: 16  # 降低batch size以适应显存
+  num_epochs: 30  # 减少epoch数进行快速测试
+  learning_rate: 0.0001
+  weight_decay: 0.0001
+  optimizer: "AdamW"
+  scheduler: "CosineAnnealingLR"
+  warmup_epochs: 3
+  use_amp: true  # 使用混合精度训练
+
+# Loss settings
+loss:
+  use_focal: true
+  focal_alpha: 0.25
+  focal_gamma: 2.0
+  use_contrastive: false
+  contrastive_weight: 0.1
+  use_aux: true
+  aux_weight: 0.5
+  use_localization: false
+  localization_weight: 0.1
+
+# Data settings
+data:
+  train_dataset: "stable_diffusion_v15"  # 使用最大的数据集
+  test_datasets:
+    - "stable_diffusion_v15"
+    - "midjourney"
+    - "glide"
+  num_workers: 4  # 减少worker数
+  pin_memory: true
+
+# Augmentation settings
+augmentation:
+  resize: 224
+  random_crop: true
+  horizontal_flip: true
+  color_jitter: true
+  normalize:
+    mean: [0.485, 0.456, 0.406]
+    std: [0.229, 0.224, 0.225]
+
+# Evaluation settings
+evaluation:
+  metrics:
+    - accuracy
+    - auc
+    - ap
+    - eer
+  save_predictions: true
+  visualize_attention: false  # 关闭可视化以加速
+
+# Logging settings
+logging:
+  log_interval: 50  # 更频繁的日志
+  save_interval: 5
+  tensorboard: true
+  wandb: false
+
+# Paths
+paths:
+  data_root: "./datasets/stable_diffusion_v15"
+  output_dir: "./outputs/training_run"
+  checkpoint_dir: "./checkpoints"
+  log_dir: "./logs"
+
+# Random seed
+seed: 42

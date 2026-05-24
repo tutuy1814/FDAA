@@ -1,0 +1,37 @@
+# 新的数据集配置 - 三个数据集用于跨域实验
+datasets:
+  # 训练数据集
+  stable_diffusion_v15:
+    root: "./datasets/stable_diffusion_v15"
+    train_dir: "train"
+    test_dir: "test"
+    classes: ["real", "fake"]
+    generator: "Stable Diffusion v1.5"
+    
+  # 跨域测试数据集1
+  midjourney:
+    root: "./datasets/midjourney"
+    train_dir: "train"
+    test_dir: "test"
+    classes: ["real", "fake"]
+    generator: "Midjourney"
+    
+  # 跨域测试数据集2
+  glide:
+    root: "./datasets/glide"
+    train_dir: "train"
+    test_dir: "test"
+    classes: ["real", "fake"]
+    generator: "GLIDE"
+
+# 实验设置
+experiment_config:
+  # 域内实验: 在SD v1.5上训练和测试
+  in_domain:
+    train_dataset: "stable_diffusion_v15"
+    test_dataset: "stable_diffusion_v15"
+    
+  # 跨域实验: 在SD v1.5上训练，在其他数据集上测试
+  cross_domain:
+    train_dataset: "stable_diffusion_v15"
+    test_datasets: ["midjourney", "glide"]

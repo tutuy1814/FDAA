@@ -1,0 +1,151 @@
+# 泛化增强实验配置文件
+# Generalization Enhancement Experiment Configuration
+
+# =============================================================================
+# 数据配置
+# =============================================================================
+data:
+  root: "../GenImage"
+  train_dataset: "BigGAN"
+  test_datasets:
+    - "BigGAN"
+    - "ADM"
+    - "ProGAN"
+    - "StyleGAN2"
+  train_samples: 20000
+  test_samples: 2000
+  img_size: 224
+
+# =============================================================================
+# 模型配置
+# =============================================================================
+model:
+  # Backbone
+  backbone_name: "ViT-L/14"
+  embed_dim: 1024
+  patch_size: 14
+  freeze_backbone: true
+
+  # FDAA-DA 配置
+  num_adapter_layers: 3
+  use_multi_level_da: true      # 使用多层级域对抗
+  use_domain_adversarial: true  # 启用域对抗训练
+
+  # MGFP-PCR 配置
+  num_prototypes: 4
+  use_hierarchical: true        # 启用层级伪造感知
+  use_pcr: true                 # 启用原型对比正则化
+
+  # 域配置
+  num_domains: 4                # 数据集/生成器数量
+
+  # 其他
+  dropout: 0.1
+
+# =============================================================================
+# 训练配置
+# =============================================================================
+training:
+  batch_size: 32
+  epochs: 10
+
+  # 优化器
+  optimizer: "AdamW"
+  learning_rate: 1.0e-4
+  weight_decay: 1.0e-4
+
+  # 学习率调度
+  scheduler: "CosineAnnealingLR"
+  warmup_epochs: 1
+
+  # 梯度裁剪
+  max_grad_norm: 1.0
+
+# =============================================================================
+# 损失函数配置
+# =============================================================================
+loss:
+  # 主分类损失
+  use_focal: true
+  focal_alpha: 0.25
+  focal_gamma: 2.0
+
+  # 辅助分类损失
+  use_aux: true
+  aux_weight: 0.5
+
+  # 域对抗损失
+  use_domain_adversarial: true
+  domain_weight: 0.1
+
+  # 原型损失
+  use_prototype_alignment: true
+  prototype_alignment_weight: 0.1
+  use_prototype_diversity: true
+  prototype_diversity_weight: 0.05
+
+  # 对比损失
+  use_contrastive: true
+  contrastive_weight: 0.1
+
+  # 一致性损失
+  use_consistency: true
+  consistency_weight: 0.1
+
+  # 跨域对齐损失
+  use_cross_domain: true
+  cross_domain_weight: 0.1
+
+# =============================================================================
+# 消融实验配置
+# =============================================================================
+ablation:
+  # 可选: baseline, dafl_only, afb_only, pcr_only, dafl_afb, dafl_pcr, afb_pcr, full
+  configs:
+    baseline:
+      use_multi_level_da: false
+      use_domain_adversarial: false
+      use_pcr: false
+      use_hierarchical: false
+
+    dafl_only:
+      use_multi_level_da: true
+      use_domain_adversarial: true
+      use_pcr: false
+      use_hierarchical: false
+
+    afb_only:
+      use_multi_level_da: true
+      use_domain_adversarial: false
+      use_pcr: false
+      use_hierarchical: false
+
+    pcr_only:
+      use_multi_level_da: false
+      use_domain_adversarial: false
+      use_pcr: true
+      use_hierarchical: true
+
+    full:
+      use_multi_level_da: true
+      use_domain_adversarial: true
+      use_pcr: true
+      use_hierarchical: true
+
+# =============================================================================
+# 输出配置
+# =============================================================================
+output:
+  dir: "outputs/generalization"
+  save_checkpoints: true
+  save_best_only: true
+  log_interval: 50
+
+# =============================================================================
+# 其他配置
+# =============================================================================
+misc:
+  seed: 42
+  num_workers: 4
+  device: "cuda"
+  mixed_precision: false
